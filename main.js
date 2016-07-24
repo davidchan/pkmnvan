@@ -105,9 +105,19 @@ var pokeMap = {
 
 var cache = {};
 
-function sendTweet (msg) {
-    console.log(msg);
-    client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+function sendTweet (p, name) {
+    var text = createMessage (p, name);
+    var mapUrl = createMapUrl(p.latitude, p.longitude);
+
+    getAddress(p.latitude, p.longitude, (addressStr) => {
+        if (addressStr) {
+            addressStr = '(' + addressStr + ')';
+        }
+        var msg = text + ' ' + addressStr + ' ' + mapUrl;
+        console.log(msg);
+        //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+    });
+
 }
 
 function createMessage (monData, name) {
@@ -116,45 +126,77 @@ function createMessage (monData, name) {
     var expirationStr = exp.clone().format('h:mmA'); // 9:28PM
     var expFromNow = exp.clone().toNow(true);      // in X mins
 
-    return name + ' found. Around for ' + expFromNow + ', until ' + expirationStr + '. (' + monData.uid + ') ' + createMapUrl(monData.latitude, monData.longitude);
+    return name + ' found. Around for ' + expFromNow + ', until ' + expirationStr;
 }
 
-function createMapUrl (sLat, sLong) {
-    return 'https://maps.google.com/maps?q=' + sLat + ',' + sLong;
+function createMapUrl (lat, longi) {
+    return 'https://maps.google.com/maps?q=' + lat + ',' + longi;
 }
 
-function putCache (result) {
-    var uid = result.uid;
-    if (getCache(uid)) {
+function getAddress (lat, longi, callback) {
+    var url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + lat + ',' + longi + '&key=' + process.env.GOOGLE_KEY;
+    getContent(url).then((body) => {
+        var json,
+            output = '';
+        if (body && body.length && body.charAt(0) === '{') {
+            json = JSON.parse(body);
+            if (json.results && json.results[0] && json.results[0].address_components && json.results[0].formatted_address) {
+                output = json.results[0].formatted_address;
+                // turn "1050 Quebec St, Vancouver, BC V6A, Canada" into "1050 Quebec St"
+                output = output.split(',')[0];
+                output = 'near ' + output;
+            }
+        }
+        callback(output);
+    });
+}
+
+function getCacheKey (p) {
+    // can't trust p.uid for some reason
+    return p.pokemonId + '|' + p.latitude + '|' + p.longitude;
+}
+
+function putCache (key, p) {
+    if (getCache(key)) {
         return;
     }
-    cache[uid] = result;
+    cache[key] = p;
 }
 
-function getCache (uid) {
-    return cache[uid];
+function getCache (key) {
+    return cache[key];
 }
 
-function removeCache (uid) {
-    delete cache[uid];
+function removeCache (key) {
+    delete cache[key];
 }
 
 function cleanCache () {
     var curr = (new Date())*1;
     var toDelete = [];
-    for (var uid in cache) {
-        var p = cache[uid];
+    for (var key in cache) {
+        var p = cache[key];
         // give 1 second buffer
         if (curr >= (p.expiration_time + 1)*1000) {
-            toDelete.push(uid);
+            toDelete.push(key);
         }
     }
 
     console.log(Object.keys(cache), toDelete);
 
-    toDelete.forEach(function (uid) {
-        removeCache(uid);
+    toDelete.forEach(function (key) {
+        removeCache(key);
     });
+}
+
+function isCached (p) {
+    var result = false;
+
+    var cached = getCache(getCacheKey(p));
+    if (cached) {
+        result = true;
+    }
+    return result;
 }
 
 function processMons (res, callback) {
@@ -162,12 +204,10 @@ function processMons (res, callback) {
         res.pokemon.forEach((p) => {
             var pId = parseInt(p.pokemonId, 10);
             if (pokeMap[pId]) {
-                var uid = p.uid;
-                if (!getCache(uid)) {
+                if (!isCached(p)) {
                     var name = pokeMap[pId];
-                    var msg = createMessage(p, name);
-                    sendTweet(msg);
-                    putCache(p);
+                    sendTweet(p, name);
+                    putCache(getCacheKey(p), p);
                 }
             }
         });
@@ -206,6 +246,7 @@ function getContent (url) {
             // handle http errors
             if (response.statusCode < 200 || response.statusCode > 299) {
                 //reject(new Error('Failed to load page, status code: ' + response.statusCode));
+                console.log('Failed to get: ' + url);
                 resolve('');
             }
             // temporary data holder
@@ -217,7 +258,10 @@ function getContent (url) {
         });
         // handle connection errors of the request
         //request.on('error', (err) => reject(err));
-        request.on('error', () => resolve(''));
+        request.on('error', () => {
+            console.log('Failed to get: ' + url);
+            resolve('');
+        });
     });
 };
 
