@@ -107,7 +107,7 @@ var cache = {};
 
 function sendTweet (msg) {
     console.log(msg);
-    //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+    client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
 }
 
 function createMessage (monData, name) {
