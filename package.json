@@ -1,0 +1,17 @@
+{
+  "name": "pkmnvan",
+  "version": "1.0.0",
+  "description": "Reports pokemon in Vancouver",
+  "main": "main.js",
+  "dependencies": {
+    "request": "^2.74.0",
+    "moment": "^2.13.0",
+    "twitter": "^1.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Chan",
+  "license": "MIT"
+}
