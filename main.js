@@ -116,7 +116,7 @@ function sendTweet (p, name) {
         }
         var msg = nameStr + addressStr + '. ' + expStr + ' ' + mapUrl;
         console.log(msg);
-        //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+        client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
     });
 
 }
@@ -127,7 +127,7 @@ function createExpiryMessage (monData) {
     var expirationStr = exp.clone().format('h:mmA'); // 9:28PM
     var expFromNow = exp.clone().toNow(true);      // in X mins
 
-    return 'Around for ' + expFromNow + ', until ' + expirationStr;
+    return 'It will be there for ' + expFromNow + ', until ' + expirationStr;
 }
 
 function createMapUrl (lat, longi) {
