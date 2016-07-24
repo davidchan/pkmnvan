@@ -1,15 +1,16 @@
 var http = require('https');
 var Twitter = require('twitter');
 var moment = require('moment');
-var config = require('./config.js');
+
+console.log(process.env);
 
 // setup libraries
 moment().format();
 var client = new Twitter({
-    consumer_key: config.TW_CONSUMER_KEY,
-    consumer_secret: config.TW_CONSUMER_SECRET,
-    access_token_key: config.TW_ACCESS_TOKEN_KEY,
-    access_token_secret: config.TW_ACCESS_TOKEN_SECRET
+    consumer_key: process.env.TW_CONSUMER_KEY,
+    consumer_secret: process.env.TW_CONSUMER_SECRET,
+    access_token_key: process.env.TW_ACCESS_TOKEN_KEY,
+    access_token_secret: process.env.TW_ACCESS_TOKEN_SECRET
 });
 
 var urlsDt = [
