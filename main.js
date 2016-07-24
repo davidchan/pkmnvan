@@ -106,27 +106,28 @@ var pokeMap = {
 var cache = {};
 
 function sendTweet (p, name) {
-    var text = createMessage (p, name);
+    var nameStr = name + ' found';
+    var expStr = createExpiryMessage (p);
     var mapUrl = createMapUrl(p.latitude, p.longitude);
 
     getAddress(p.latitude, p.longitude, (addressStr) => {
         if (addressStr) {
-            addressStr = '(' + addressStr + ')';
+            addressStr = ' ' + addressStr;
         }
-        var msg = text + ' ' + addressStr + ' ' + mapUrl;
+        var msg = nameStr + addressStr + '. ' + expStr + ' ' + mapUrl;
         console.log(msg);
-        client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+        //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
     });
 
 }
 
-function createMessage (monData, name) {
+function createExpiryMessage (monData) {
     var secondsExp = monData.expiration_time;
     var exp = moment(secondsExp * 1000).tz('America/Vancouver');
     var expirationStr = exp.clone().format('h:mmA'); // 9:28PM
     var expFromNow = exp.clone().toNow(true);      // in X mins
 
-    return name + ' found. Around for ' + expFromNow + ', until ' + expirationStr;
+    return 'Around for ' + expFromNow + ', until ' + expirationStr;
 }
 
 function createMapUrl (lat, longi) {
