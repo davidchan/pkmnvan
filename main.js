@@ -177,8 +177,8 @@ function getByUrls (urls) {
     var promises = urls.map((url) => {
         return getContent(url);
     });
-    var outputs = [];
     Promise.all(promises).then(bodies => {
+        var outputs = [];
         bodies.forEach((body) => {
             if (body && body.length && body.charAt(0) === '{') {
                 try {
@@ -190,20 +190,6 @@ function getByUrls (urls) {
 
         outputs.forEach((data) => {
             processMons(data);
-        });
-    });
-}
-
-function getMons (url, callback) {
-    var promiseCall = getContent(url);
-    Promise.all([promiseCall]).then(bodies => {
-        bodies.forEach((body) => {
-            if (body && body.length && body.charAt(0) === '{') {
-                try {
-                    var parsed = JSON.parse(body);
-                    callback(parsed);
-                } catch (e) {}
-            }
         });
     });
 }
