@@ -2,10 +2,9 @@ var http = require('https');
 var Twitter = require('twitter');
 var moment = require('moment');
 
-console.log(process.env);
-
 // setup libraries
 moment().format();
+// secrets from environment
 var client = new Twitter({
     consumer_key: process.env.TW_CONSUMER_KEY,
     consumer_secret: process.env.TW_CONSUMER_SECRET,
@@ -108,7 +107,7 @@ var cache = {};
 
 function sendTweet (msg) {
     console.log(msg);
-    //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+    client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
 }
 
 function createMessage (monData, name) {
