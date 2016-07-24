@@ -1,9 +1,10 @@
 var http = require('https');
 var Twitter = require('twitter');
 var moment = require('moment');
+require('moment-timezone');
 
 // setup libraries
-moment().format();
+moment().tz('America/Vancouver').format();
 // secrets from environment
 var client = new Twitter({
     consumer_key: process.env.TW_CONSUMER_KEY,
@@ -107,7 +108,7 @@ var cache = {};
 
 function sendTweet (msg) {
     console.log(msg);
-    client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+    //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
 }
 
 function createMessage (monData, name) {
