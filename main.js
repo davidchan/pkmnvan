@@ -4,7 +4,6 @@ var moment = require('moment');
 require('moment-timezone');
 
 // setup libraries
-moment().tz('America/Vancouver').format();
 // secrets from environment
 var client = new Twitter({
     consumer_key: process.env.TW_CONSUMER_KEY,
@@ -113,8 +112,9 @@ function sendTweet (msg) {
 
 function createMessage (monData, name) {
     var secondsExp = monData.expiration_time;
-    var expirationStr = moment(secondsExp * 1000).format('h:mmA'); // 9:28PM
-    var expFromNow = moment(secondsExp * 1000).toNow(true);      // in X mins
+    var exp = moment(secondsExp * 1000).tz('America/Vancouver');
+    var expirationStr = exp.clone().format('h:mmA'); // 9:28PM
+    var expFromNow = exp.clone().toNow(true);      // in X mins
 
     return name + ' found. Around for ' + expFromNow + ', until ' + expirationStr + '. (' + monData.uid + ') ' + createMapUrl(monData.latitude, monData.longitude);
 }
