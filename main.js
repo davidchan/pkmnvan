@@ -115,7 +115,7 @@ function sendTweet (p, name) {
         }
         var msg = text + ' ' + addressStr + ' ' + mapUrl;
         console.log(msg);
-        //client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
+        client.post('statuses/update', {status: msg}, function(error, tweet, response) {});
     });
 
 }
