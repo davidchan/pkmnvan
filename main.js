@@ -12,7 +12,8 @@ var client = new Twitter({
     access_token_secret: process.env.TW_ACCESS_TOKEN_SECRET
 });
 
-var urlsDt = [
+var apiUrls = [
+    // downtown
     'https://pokevision.com/map/data/49.29154563906309/-123.13287734985352',
     'https://pokevision.com/map/data/49.28829871209136/-123.12429428100586',
     'https://pokevision.com/map/data/49.28359588700294/-123.11150550842287',
@@ -21,7 +22,13 @@ var urlsDt = [
     'https://pokevision.com/map/data/49.278388664575886/-123.12764167785645',
     'https://pokevision.com/map/data/49.28337193176269/-123.13708305358885',
     'https://pokevision.com/map/data/49.29137769980898/-123.14240455627443',
-    'https://pokevision.com/map/data/49.281692235039465/-123.12026023864746'
+    'https://pokevision.com/map/data/49.281692235039465/-123.12026023864746',
+
+    // mt pleasant (near the office)
+    'https://pokevision.com/map/data/49.26648837773104/-123.10094833374025',
+    'https://pokevision.com/map/data/49.26657238981664/-123.11240673065186',
+    'https://pokevision.com/map/data/49.261223334999976/-123.11262130737303',
+    'https://pokevision.com/map/data/49.26052315401983/-123.10116291046143'
 ];
 
 var pokeMap = {
@@ -271,7 +278,7 @@ function getContent (url) {
 function main () {
     cleanCache();
 
-    getByUrls(urlsDt);
+    getByUrls(apiUrls);
 }
 
 main(); // run immediately
